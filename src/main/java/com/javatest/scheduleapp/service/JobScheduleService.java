@@ -1,20 +1,23 @@
 package com.javatest.scheduleapp.service;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.javatest.scheduleapp.cron.CronEngine;
 import com.javatest.scheduleapp.model.Job;
 
-@Controller
+@RestController
 public class JobScheduleService {
 
+	@Autowired
+	private CronEngine cronEngine;
+	
 	@RequestMapping(value="/jobs", produces="application/json")
-	@ResponseBody
-	public Job[] listJobs() {
-		return new Job[] {
-				new Job("ls", "mensagem", "* * * *"),
-				new Job("du", "msg2", "* 10 20 *")
-		};
+	public List<Job> listJobs() {
+		List<Job> jobs = cronEngine.listJobs();
+		return jobs;
 	}
 }

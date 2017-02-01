@@ -15,7 +15,6 @@
 
 	<servlet-mapping>
 		<servlet-name>SpringDispatcherServlet</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
-
 </web-app>
