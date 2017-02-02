@@ -9,6 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.javatest.scheduleapp.cron.CronEngine;
 
+/**
+ * Listener de application context do spring, destinado a iniciar e parar
+ * o CronEngine junto com o start/stop da aplicação.
+ * 
+ * @author rodrigo
+ *
+ */
 @SuppressWarnings("rawtypes")
 @Component
 public class ActivationListener implements ApplicationListener {
