@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javatest.scheduleapp.cron.CronEngine;
+import com.javatest.scheduleapp.cron.exception.InvalidCronExpressionException;
 import com.javatest.scheduleapp.cron.exception.JobAlreadyExistsException;
 import com.javatest.scheduleapp.cron.exception.NoSuchJobException;
 import com.javatest.scheduleapp.model.Job;
@@ -88,12 +89,15 @@ curl -H "Content-Type: application/json" -X POST \
 		} catch (JobAlreadyExistsException e) {
 			response.setStatus(HttpStatus.BAD_REQUEST.value());
 			return new SimpleResponse(false, e.getMessage());
+		} catch (InvalidCronExpressionException e) {
+			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			return new SimpleResponse(false, e.getMessage());
 		}
 		return new SimpleResponse(true, "Job created successfully");
 	}
 	
 	/**
-	 * Validates the job attributes
+	 * Valida a existencia dos atributos do Job
 	 * @param job
 	 */
 	private void validate(Job job) {

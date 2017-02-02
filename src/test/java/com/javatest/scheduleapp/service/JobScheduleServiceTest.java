@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.javatest.scheduleapp.cron.CronEngine;
+import com.javatest.scheduleapp.cron.exception.InvalidCronExpressionException;
 import com.javatest.scheduleapp.cron.exception.JobAlreadyExistsException;
 import com.javatest.scheduleapp.cron.exception.NoSuchJobException;
 import com.javatest.scheduleapp.model.Job;
@@ -55,7 +56,7 @@ public class JobScheduleServiceTest {
 	}
 	
 	@Test
-	public void create_success() throws JobAlreadyExistsException {
+	public void create_success() throws JobAlreadyExistsException, InvalidCronExpressionException {
 		String body = "{\"name\": \"Job1\", \"msg\": \"My Message\", \"cron\": \"0 * * * *\"}";
 		
 		HttpServletResponse httpResponse = Mockito.mock(HttpServletResponse.class);
@@ -129,7 +130,7 @@ public class JobScheduleServiceTest {
 	}
 	
 	@Test
-	public void create_duplicatedJobError() throws JobAlreadyExistsException {
+	public void create_duplicatedJobError() throws JobAlreadyExistsException, InvalidCronExpressionException {
 		String body = "{\"name\": \"Job1\", \"msg\": \"My Message\", \"cron\": \"0 * * * *\"}";
 		
 		HttpServletResponse httpResponse = Mockito.mock(HttpServletResponse.class);

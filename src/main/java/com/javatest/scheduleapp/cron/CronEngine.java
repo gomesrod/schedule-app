@@ -2,6 +2,7 @@ package com.javatest.scheduleapp.cron;
 
 import java.util.List;
 
+import com.javatest.scheduleapp.cron.exception.InvalidCronExpressionException;
 import com.javatest.scheduleapp.cron.exception.JobAlreadyExistsException;
 import com.javatest.scheduleapp.cron.exception.NoSuchJobException;
 import com.javatest.scheduleapp.model.Job;
@@ -30,8 +31,9 @@ public interface CronEngine {
 	 * Inclui um novo job para execução.
 	 * @param job
 	 * @throws JobAlreadyExistsException 
+	 * @throws InvalidCronExpressionException 
 	 */
-	public void addJob(Job job) throws JobAlreadyExistsException;
+	public void addJob(Job job) throws JobAlreadyExistsException, InvalidCronExpressionException;
 	
 	/**
 	 * Lista os jobs ativos.

@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.quartz.CronExpression;
+import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -13,16 +15,17 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.javatest.scheduleapp.cron.CronEngine;
+import com.javatest.scheduleapp.cron.exception.InvalidCronExpressionException;
 import com.javatest.scheduleapp.cron.exception.JobAlreadyExistsException;
 import com.javatest.scheduleapp.cron.exception.NoSuchJobException;
 import com.javatest.scheduleapp.model.Job;
@@ -48,6 +51,9 @@ public class QuartzCronEngine implements CronEngine {
 	private static final String JOB_GROUP = "cron-engine";
 	
 	private Scheduler scheduler;
+	
+	@Autowired
+	private CronExpressionAdapter cronExpressionAdapter;
 
 	@PostConstruct
 	public void init() throws SchedulerException {
@@ -88,8 +94,10 @@ public class QuartzCronEngine implements CronEngine {
 	 * (non-Javadoc)
 	 * @see com.javatest.scheduleapp.cron.CronEngine#addJob(com.javatest.scheduleapp.model.Job)
 	 */
-	public void addJob(Job job) throws JobAlreadyExistsException {
+	public void addJob(Job job) throws JobAlreadyExistsException, InvalidCronExpressionException {
 		logger.debug("Entering addJob() " + job);
+		
+		CronExpression cronExpression = cronExpressionAdapter.fromUnixCronExpression(job.getCron());
 		
 		JobKey jobKey = new JobKey(job.getName(), JOB_GROUP);
 
@@ -106,16 +114,16 @@ public class QuartzCronEngine implements CronEngine {
 				.usingJobData(JOB_NAME_KEY, job.getName())
 				.usingJobData(JOB_MESSAGE_KEY, job.getMsg())
 				.usingJobData(JOB_CRON_KEY, job.getCron())
-				.build();
-
+				.build();	
+		
 		// Trigger the job to run now, and then every 40 seconds
 		Trigger trigger = TriggerBuilder.newTrigger()
 				.withIdentity(job.getName(), JOB_GROUP)
 				.startNow()
 				.withSchedule(
-						SimpleScheduleBuilder.simpleSchedule()
-						.withIntervalInSeconds(5).repeatForever())
-				.build();
+						CronScheduleBuilder.cronSchedule(cronExpression)
+						.withMisfireHandlingInstructionDoNothing()
+				).build();
 
 		// Tell quartz to schedule the job using our trigger
 		try {

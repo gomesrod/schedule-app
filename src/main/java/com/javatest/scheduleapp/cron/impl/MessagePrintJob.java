@@ -1,5 +1,7 @@
 package com.javatest.scheduleapp.cron.impl;
 
+import java.time.LocalDateTime;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,7 +27,7 @@ public class MessagePrintJob implements Job {
 	private static final Logger logger = LoggerFactory.getLogger("PRINT-JOB");
 
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
-		String message = ctx.getJobDetail().getJobDataMap().getString(JOB_MESSAGE_KEY);
+		String message = "[" + LocalDateTime.now() + "] " + ctx.getJobDetail().getJobDataMap().getString(JOB_MESSAGE_KEY);
 		
 		logger.info(message);
 	}
